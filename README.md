@@ -1,43 +1,61 @@
 # RAG Question Answer System
 
-A FastAPI-based question-answer system that uses RAG (Retrieval-Augmented Generation) to provide intelligent responses based on pre-loaded business documents.
+A FastAPI-based Retrieval-Augmented Generation (RAG) question-answering application that retrieves relevant information from pre-loaded documents and generates AI-powered responses.
+
+> **Project Context:** This project was provided as part of an interview assignment. The existing starter code was used as the foundation. My involvement focused on setting up the project locally, troubleshooting issues, and getting the application running with AI-assisted guidance. This is not an application developed entirely from scratch by me.
 
 ## Tech Stack
 
-- **Backend**: FastAPI, Python 3.8+
-- **Database**: PostgreSQL
-- **Vector Store**: Pinecone
-- **AI Model**: Groq (Llama)
-- **Embeddings**: Sentence Transformers
-- **Frontend**: HTML, CSS, JavaScript
+- **Backend:** Python, FastAPI
+- **Database:** PostgreSQL
+- **Vector Database:** Pinecone
+- **AI Model:** Groq (Llama)
+- **Embeddings:** Sentence Transformers
+- **Frontend:** HTML, CSS, JavaScript
+
+## Project Overview
+
+The application uses the RAG approach to answer questions using information retrieved from pre-loaded business documents.
+
+The general workflow involves:
+
+1. Processing and ingesting documents.
+2. Generating embeddings for document content.
+3. Storing vector representations in Pinecone.
+4. Retrieving relevant information when a question is submitted.
+5. Generating a response using the Groq language model.
 
 ## Prerequisites
 
-Before setting up the project, make sure you have:
+Before running the application, you will need:
 
 - Python 3.8 or higher
-- PostgreSQL database
-- Pinecone account and API key
-- Groq API key
+- PostgreSQL
+- A Pinecone account and API key
+- A Groq account and API key
 
-## Installation
+## Installation and Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd rag-question-answer
+git clone https://github.com/12srishti34/Bolt-rag-chatbot.git
+cd Bolt-rag-chatbot
 ```
 
-### 2. Create Virtual Environment
+### 2. Create a Virtual Environment
+
+**Windows:**
 
 ```bash
 python -m venv venv
-
-# On Windows
 venv\Scripts\activate
+```
 
-# On macOS/Linux
+**macOS/Linux:**
+
+```bash
+python -m venv venv
 source venv/bin/activate
 ```
 
@@ -47,147 +65,75 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Environment Setup
+### 4. Configure Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root directory.
+
+Use `.env.example` as a reference and configure the required variables:
 
 ```env
-# Database Configuration
 DATABASE_URL=postgresql://username:password@localhost:5432/your_database_name
 
-# Pinecone Configuration
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX_NAME=your_index_name
 
-# Groq API Configuration
 GROQ_API_KEY=your_groq_api_key
 
-# Optional: Upload directory (if needed for future features)
 UPLOAD_DIR=app/uploads
 ```
 
+**Important:** Never upload your actual `.env` file, API keys, passwords, or other secrets to GitHub.
+
 ### 5. Database Setup
 
-#### Create PostgreSQL Database
+Create a PostgreSQL database:
 
 ```sql
 CREATE DATABASE your_database_name;
 ```
 
-#### Run Database Migrations
+Run database migrations:
 
 ```bash
-# If using Alembic (recommended)
 alembic upgrade head
-
-# Or create tables manually using Python
-python -c "from app.db import engine; from app.models.models import Base; Base.metadata.create_all(bind=engine)"
 ```
 
-### 6. Pinecone Setup
+### 6. Pinecone Configuration
 
-1. Create a Pinecone account at [pinecone.io](https://pinecone.io)
-2. Create a new index with:
-   - **Dimensions**: 384
-   - **Metric**: cosine
-   - **Pod Type**: p1.x1 (or starter for free tier)
+1. Create an account at [Pinecone](https://www.pinecone.io/).
+2. Create a vector index.
+3. Configure the index according to the embedding model used by the application.
+4. Add the index name and API key to your `.env` file.
 
-### 7. Static Files
+### 7. Run the Application
 
-Ensure you have the required static files:
-
-```
-static/
-├── bolt-logo.png
-└── bolt_fav.png
-```
-
-## Running the Application
-
-### Development Mode
+Start the FastAPI development server:
 
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Production Mode
+Open the application at:
 
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
+- **Local:** http://localhost:8000
 
-### Docker Production Deployment
+FastAPI documentation may be available at:
 
-#### Prerequisites
-- Docker and Docker Compose installed
-- SSL certificates (for HTTPS)
-
-#### Quick Start
-
-1. **Configure Environment**
-   ```bash
-   cp .env.production.template .env.production
-   nano .env.production  # Fill in your API keys and passwords
-   ```
-
-2. **Setup SSL Certificates**
-   ```bash
-   mkdir ssl
-   # Add your SSL certificates:
-   # ssl/cert.pem (SSL certificate)
-   # ssl/key.pem (SSL private key)
-   
-   # Or generate self-signed for testing:
-   openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes
-   ```
-
-3. **Deploy**
-   ```bash
-   ./deploy.sh
-   ```
-
-#### Manual Docker Commands
-
-```bash
-# Build and start services
-docker-compose -f docker-compose.prod.yml up -d
-
-# View logs
-docker-compose -f docker-compose.prod.yml logs -f
-
-# Stop services
-docker-compose -f docker-compose.prod.yml down
-
-# Restart services
-docker-compose -f docker-compose.prod.yml restart
-```
-
-#### Production URLs
-- **HTTPS**: https://localhost (with SSL)
-- **HTTP**: http://localhost (redirects to HTTPS)
-- **Direct API**: http://localhost:8000
-
-The application will be available at:
-- **Local**: http://localhost:8000
-- **Network**: http://your-ip:8000
+- http://localhost:8000/docs
 
 ## API Endpoints
 
-### Health Check
-```
-GET /health
-```
+The existing project README documents the following endpoints:
 
-### Test Pinecone Connection
-```
-GET /test-pinecone/
-```
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Health check |
+| GET | `/test-pinecone/` | Test Pinecone connection |
+| POST | `/ask-question/` | Submit a question |
 
-### Ask Question
-```
-POST /ask-question/
-Content-Type: application/json
+Example request:
 
+```json
 {
   "question": "Your question here"
 }
@@ -195,16 +141,38 @@ Content-Type: application/json
 
 ## Project Structure
 
-```
+```text
+Bolt-rag-chatbot/
+│
+├── alembic/                 # Database migrations
 ├── app/
-│   ├── models/
-│   │   └── models.py          # Database models
-│   └── db.py                  # Database configuration
-├── templates/
-│   └── index.html             # Web interface
-├── static/                    # Static files (images, CSS, JS)
-├── main.py                    # FastAPI application
-├── requirements.txt           # Python dependencies
-├── .env                       # Environment variables
-└── README.md                  # This file
+│   ├── models/              # Database models
+│   └── db.py                # Database configuration
+│
+├── documents/               # Document files
+├── static/                  # Static assets
+├── templates/               # HTML templates
+│
+├── main.py                  # FastAPI application
+├── ingest.py                # Document ingestion
+├── requirements.txt         # Python dependencies
+├── alembic.ini              # Alembic configuration
+├── Dockerfile
+├── docker-compose.prod.yml
+├── .env.example             # Environment variable template
+└── README.md
 ```
+
+## My Involvement
+
+- Worked with an existing Python/FastAPI RAG project supplied as an interview assignment.
+- Set up the project in a local development environment.
+- Worked through setup and runtime issues to get the application running.
+- Used ChatGPT-assisted guidance for troubleshooting and understanding the existing codebase.
+
+**Note:** The original application and starter code were not created from scratch by me. The repository is shared for learning and portfolio documentation purposes.
+
+## AI Assistance
+
+ChatGPT was used as a supporting tool for technical guidance, debugging, and troubleshooting during the setup process.
+
