@@ -1,0 +1,13 @@
+env/
+.venv/# Python virtual environments
+venv/
+*.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+uploads/
+nenv/
+.env.*
+!.env.example
+.DS_Store
